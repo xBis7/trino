@@ -21,10 +21,10 @@ services:
       - '8080:8080'
     volumes:
       - ./etc:/etc/trino
-    env_file:
-      - ./config
+      - ./conf/core-site.xml:/etc/hadoop/conf/core-site.xml:ro
+      - ./conf/hdfs-site.xml:/etc/hadoop/conf/hdfs-site.xml:ro
     networks:
-      - hadoop-network
+      - hadoop_hadoop-network
 
   mariadb:
     image: 'mariadb:latest'
@@ -36,32 +36,28 @@ services:
       MYSQL_USER: admin
       MYSQL_PASSWORD: admin
       MYSQL_DATABASE: metastore_db
-    env_file:
-      - ./config
     networks:
-      - hadoop-network
+      - hadoop_hadoop-network
 
   hive-metastore:
-    image: 'bitsondatadev/hive-metastore:latest'
+#    image: 'bitsondatadev/hive-metastore:latest'
+    image: 'ghcr.io/trinodb/testing/hive3.1-hive:latest'
     hostname: hive-metastore
     ports:
       - '9083:9083' # Metastore Thrift
     volumes:
       - ./conf/metastore-site.xml:/opt/apache-hive-metastore-3.0.0-bin/conf/metastore-site.xml:ro
-    env_file:
-      - ./config
     environment:
       METASTORE_DB_HOSTNAME: mariadb
     depends_on:
       - mariadb
     networks:
-      - hadoop-network
+      - hadoop_hadoop-network
 
 volumes:
   hdfs-data:
     driver: local
 
 networks:
-  hadoop-network:
+  hadoop_hadoop-network:
     external: true
-
