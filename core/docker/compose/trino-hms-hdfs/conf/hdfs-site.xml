@@ -2,6 +2,11 @@
 <configuration>
 
     <property>
+        <name>dfs.namenode.rpc-address=</name>
+        <value>namenode:8020</value>
+    </property>
+
+    <property>
         <name>dfs.namenode.name.dir</name>
         <value>/var/lib/hadoop-hdfs/cache/name/</value>
     </property>

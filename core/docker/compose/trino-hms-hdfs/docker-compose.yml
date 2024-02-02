@@ -26,31 +26,32 @@ services:
     networks:
       - hadoop_hadoop-network
 
-  mariadb:
-    image: 'mariadb:latest'
-    hostname: mariadb
+  postgres:
+    image: 'postgres:latest'
+    hostname: postgres
     ports:
-      - '3306:3306'
+      - '5433:5432' # Ranger-postgres uses 5432
     environment:
-      MYSQL_ROOT_PASSWORD: admin
-      MYSQL_USER: admin
-      MYSQL_PASSWORD: admin
-      MYSQL_DATABASE: metastore_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: metastore_db
+    healthcheck:
+      test:  ["CMD", "psql", "-U", "postgres", "postgres"]
     networks:
       - hadoop_hadoop-network
 
   hive-metastore:
-#    image: 'bitsondatadev/hive-metastore:latest'
     image: 'ghcr.io/trinodb/testing/hive3.1-hive:latest'
     hostname: hive-metastore
+    depends_on:
+      postgres:
+        condition: service_healthy
     ports:
       - '9083:9083' # Metastore Thrift
     volumes:
-      - ./conf/metastore-site.xml:/opt/apache-hive-metastore-3.0.0-bin/conf/metastore-site.xml:ro
+      - ./conf/metastore-site.xml:/opt/apache-hive-metastore-3.1.2-bin/conf/metastore-site.xml:ro
     environment:
-      METASTORE_DB_HOSTNAME: mariadb
-    depends_on:
-      - mariadb
+      METASTORE_DB_HOSTNAME: postgres
     networks:
       - hadoop_hadoop-network
 
