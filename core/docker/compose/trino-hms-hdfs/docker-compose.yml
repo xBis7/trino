@@ -26,35 +26,6 @@ services:
     networks:
       - hadoop_hadoop-network
 
-  postgres:
-    image: 'postgres:latest'
-    hostname: postgres
-    ports:
-      - '5433:5432' # Ranger-postgres uses 5432
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: metastore_db
-    healthcheck:
-      test:  ["CMD", "psql", "-U", "postgres", "postgres"]
-    networks:
-      - hadoop_hadoop-network
-
-  hive-metastore:
-    image: 'ghcr.io/trinodb/testing/hive3.1-hive:latest'
-    hostname: hive-metastore
-    depends_on:
-      postgres:
-        condition: service_healthy
-    ports:
-      - '9083:9083' # Metastore Thrift
-    volumes:
-      - ./conf/metastore-site.xml:/opt/apache-hive-metastore-3.1.2-bin/conf/metastore-site.xml:ro
-    environment:
-      METASTORE_DB_HOSTNAME: postgres
-    networks:
-      - hadoop_hadoop-network
-
 volumes:
   hdfs-data:
     driver: local
