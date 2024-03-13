@@ -19,17 +19,28 @@ services:
     hostname: trino-coordinator
     ports:
       - '8080:8080'
+      - '9999:9999' # Debugger
+      - '8888:8888' # Debugger
+    environment:
+      - TRINO_HOME=/usr/lib/trino
+      - CATALOG_MANAGEMENT=static
     volumes:
+      - ../:/usr/lib/trino
       - ./etc:/etc/trino
-      - ./conf/core-site.xml:/etc/hadoop/conf/core-site.xml:ro
-      - ./conf/hdfs-site.xml:/etc/hadoop/conf/hdfs-site.xml:ro
+      - ./run-trino:/usr/lib/trino/run-trino
+      - ./libjvmkill.so:/usr/lib/trino/bin/libjvmkill.so
+      #      - ./trino-cli-437-SNAPSHOT-executable.jar:/usr/bin/trino/trino-cli-437-SNAPSHOT-executable.jar
+      - ./conf/core-site.xml:/etc/hadoop/conf/core-site.xml
+      - ./conf/hdfs-site.xml:/etc/hadoop/conf/hdfs-site.xml
+    command: ["/usr/lib/trino/run-trino"]
     networks:
-      - hadoop_hadoop-network
+      - ranger-net
 
 volumes:
   hdfs-data:
     driver: local
 
 networks:
-  hadoop_hadoop-network:
+  ranger-net:
+    name: rangernw
     external: true

@@ -1065,6 +1065,7 @@ public final class ThriftHiveMetastore
     {
         AtomicInteger attemptCount = new AtomicInteger();
         try {
+            log.info("xbis: Running from sources.");
             retry()
                     .stopOn(NoSuchObjectException.class)
                     .stopOnIllegalExceptions()
